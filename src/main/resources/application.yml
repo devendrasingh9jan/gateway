@@ -1,0 +1,31 @@
+server:
+  port: 8000
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+
+
+spring:
+  application:
+    name: API-GATEWAY
+  cloud:
+    gateway:
+      routes:
+        - id: AUTHENTICATION-SERVICE
+          uri: lb://AUTHENTICATION-SERVICE
+          predicates:
+            - Path=/api/auth/**
+        - id: USER-PROFILE-SERVICE
+          uri: lb://USER-PROFILE-SERVICE
+          predicates:
+            - Path=/api/user/**
+        - id: SPORTS-SERVICE
+          uri: lb://SPORTS-SERVICE
+          predicates:
+            - Path=/api/leagues/**
+        - id: WISHLIST-SERVICE
+          uri: lb://WISHLIST-SERVICE
+          predicates:
+            - Path=/api/bookmarks/**
