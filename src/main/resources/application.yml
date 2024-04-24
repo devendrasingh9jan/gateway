@@ -17,15 +17,22 @@ spring:
           uri: lb://AUTHENTICATION-SERVICE
           predicates:
             - Path=/api/auth/**
+
         - id: USER-PROFILE-SERVICE
           uri: lb://USER-PROFILE-SERVICE
           predicates:
             - Path=/api/user/**
+
         - id: SPORTS-SERVICE
           uri: lb://SPORTS-SERVICE
           predicates:
             - Path=/api/leagues/**
+          filters:
+            - AuthenticationFilter
+
         - id: WISHLIST-SERVICE
           uri: lb://WISHLIST-SERVICE
           predicates:
             - Path=/api/bookmarks/**
+          filters:
+            - AuthenticationFilter
