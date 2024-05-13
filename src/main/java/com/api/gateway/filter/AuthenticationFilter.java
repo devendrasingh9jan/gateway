@@ -1,8 +1,11 @@
 package com.api.gateway.filter;
 
-import com.api.gateway.exception.TokenMissingException;
-import com.api.gateway.exception.UserUnauthorizedException;
+import com.api.gateway.exception.*;
 import com.api.gateway.util.JwtUtil;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
@@ -35,10 +38,24 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
                 }
                 try {
                     jwtUtil.validateToken(authHeader);
-
-                } catch (Exception e) {
-                    System.out.println("invalid access...!");
-                    throw new UserUnauthorizedException("unauthorized access to application");
+                } catch (ExpiredJwtException ex) {
+                    System.out.println("Token expired...!");
+                    throw new TokenExpiredException("Token has expired");
+                } catch (MalformedJwtException ex) {
+                    System.out.println("Malformed token...!");
+                    throw new MalformedTokenException("Malformed token");
+                } catch (SignatureException ex) {
+                    System.out.println("Invalid signature...!");
+                    throw new InvalidSignatureException("Invalid token signature");
+                } catch (UnsupportedJwtException ex) {
+                    System.out.println("Unsupported token...!");
+                    throw new UnsupportedTokenException("Unsupported token");
+                } catch (IllegalArgumentException ex) {
+                    System.out.println("Illegal argument...!");
+                    throw new IllegalArgumentException("Invalid token");
+                } catch (Exception ex) {
+                    System.out.println("Unexpected error...!");
+                    throw new RuntimeException("Unexpected error occurred", ex);
                 }
             }
             return chain.filter(exchange);
